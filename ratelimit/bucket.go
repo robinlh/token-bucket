@@ -38,6 +38,7 @@ type TokenBucketLimiter struct {
 func (tb *TokenBucket) refill() {
 	now := tb.clock.Now()
 	elapsed := now.Sub(tb.lastRefillTimestamp)
+	tb.lastRefillTimestamp = now
 
 	newTokensFloat := tb.refillRate*elapsed.Seconds() + tb.tokenRemainder
 	newTokensInt := int32(newTokensFloat)
@@ -45,7 +46,6 @@ func (tb *TokenBucket) refill() {
 
 	if newTokensInt > 0 {
 		tb.tokens = min(tb.capacity, tb.tokens+newTokensInt)
-		tb.lastRefillTimestamp = now
 	}
 }
 
